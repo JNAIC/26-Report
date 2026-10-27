@@ -74,9 +74,9 @@
 - [ ] 没做完的任务
 - [x] 做完的任务
 
-8. 数学公式
-- 这是一个行内公式：$y=x^2+\frac{1}{2}$ （使用`$y=x^2+\frac{1}{2}$`）
-- 这也是一个行内公式：\(E=mc^2\)  （使用`\(E=mc^2\)`
+8. **数学公式**
+- 这是一个行内公式：$`y=x^2+\frac{1}{2}`$ （使用`` $`y=x^2+\frac{1}{2}`$ ``）
+- 这也是一个行内公式：\(E=mc^2\)  （使用`\(E=mc^2\)`)github 似乎渲染不出来这个懒得删了。。。
 - 独立公式 `$$`
 
   $$
@@ -96,7 +96,7 @@
 >无穷大\infty 箭头\rightarroe
 >```
 
-9. Emoji
+9. **Emoji**
 - :x: :warning: :rocket::bulb: :fire: :thumbsup: :computer: :book:
 - [emoji简码大全](https://www.webfx.com/tools/emoji-cheat-sheet/)
 
