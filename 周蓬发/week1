@@ -13,22 +13,22 @@
 ## 梯度下降
 - 以代价函数J=(w,b)为例：
  求min J(w,b):利用数学公式每次稍微改变参数值，减小J,直到J最终稳定或接近最小值
- - 数学公式$$w=w-\alpha \frac{\partial}{\partial w} J(w,b)$$
-  $$b=b-\alpha \frac{\partial}{\partial b} J(w,b)$$
-  其中$\alpha$为称为learn rate,用来控制步长，为0到1的小正数，不能太小或太大
-  太大：w,b无法收敛
-  太小：步长小，效率慢
+ - 数学公式: $$w=w-\alpha \frac{\partial}{\partial w} J(w,b)$$,
+   $$b=b-\alpha \frac{\partial}{\partial b} J(w,b)$$
+   
+  - 其中 $\alpha$ 为称为learn rate,用来控制步长，为0到1的小正数，不能太小或太大
+  - 太大：w,b无法收敛
+  - 太小：步长小，效率慢
 - $\omega$,b需要同时更新，才能达到最好效果
-CORRECT:
-$$tmp_w=w-\alpha \frac{\partial}{\partial w} J(w,b)$$
-$$tmp_b=b-\alpha \frac{\partial}{\partial b} J(w,b)$$
-$$w=tmp_w$$
-$$b=tmp_b$$
-FALSE:
-$$tmp_w=w-\alpha \frac{\partial}{\partial w} J(w,b)$$
-$$w=tmp_w$$
+- CORRECT:
+- $$tmp_w=w-\alpha \frac{\partial}{\partial w} J(w,b)$$
+- $$tmp_b=b-\alpha \frac{\partial}{\partial b} J(w,b)$$
+- $$w=tmp_w$$
+- $$b=tmp_b$$
+- FALSE:
+- $$tmp_w=w-\alpha \frac{\partial}{\partial w} J(w,b)$$
+- $$w=tmp_w$$
 >  这一步w已经更新了
-$$tmp_b=b-\alpha \frac{\partial}{\partial b} J(w,b)$$
+ $$tmp_b=b-\alpha \frac{\partial}{\partial b} J(w,b)$$
 
-$$b=tmp_b$$
-
+- $$b=tmp_b$$
