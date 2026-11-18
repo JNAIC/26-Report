@@ -1,0 +1,114 @@
+### 1. 本周学习内容
+
+- **期中考试复盘**：本周重点进行了高数、代数、数分以及 C 语言的期中考试。考后对试卷进行了全面分析，反思了失分原因，并对所有错题进行了重新订正和知识点梳理。
+- **AI 实验（手写数字识别）**：根据 PDF 教程，成功利用 PyTorch 从零搭建了一个卷积神经网络，完成了 MNIST 数据集的分类任务。
+- **模型训练与评估**：对模型进行了 3 个 Epoch 的训练，最终在 10000 张测试集上取得了 **98.76%** 的准确率，并使用 matplotlib 成功绘制了训练损失的下降折线图。
+
+### 2. 本周遇到的问题
+
+- **CNN 训练的报错与解决**：在编写训练代码时，遇到了缺少画图库 `matplotlib` 的报错。通过查阅资料，在终端使用 `pip install` 命令成功安装了该库，并顺利画出了损失折线图。
+- **期中考试暴露的问题**：通过期中考试发现，C 语言在手写代码时不够严谨；高代数分的计算速度还有待提高，做题速度慢。
+
+### 3. 下周学习计划
+
+- 针对期中考试暴露出的薄弱知识点，进行专项刷题和巩固，为期末考试做准备。
+
+- 继续深入学习 CNN 相关原理，尝试调整网络超参数，看看能否进一步提升识别准确率。
+
+
+  import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import torch.optim as optim
+import torchvision
+import torchvision.transforms as transforms
+import matplotlib.pyplot as plt
+
+# 图像预处理
+transform = transforms.Compose([
+    transforms.ToTensor(),
+    transforms.Normalize((0.5,), (0.5,))
+])
+
+# 加载 MNIST 数据集
+trainset = torchvision.datasets.MNIST(root='./data', train=True, download=True, transform=transform)
+trainloader = torch.utils.data.DataLoader(trainset, batch_size=64, shuffle=True)
+
+testset = torchvision.datasets.MNIST(root='./data', train=False, download=True, transform=transform)
+testloader = torch.utils.data.DataLoader(testset, batch_size=64, shuffle=False)
+
+# 搭建 CNN 模型
+class Net(nn.Module):
+    def __init__(self):
+        super(Net, self).__init__()
+        # 卷积层与池化层
+        self.conv1 = nn.Conv2d(1, 32, 3, 1)
+        self.conv2 = nn.Conv2d(32, 64, 3, 1)
+        self.pool = nn.MaxPool2d(2, 2)
+        
+        # 全连接层
+        self.fc1 = nn.Linear(64 * 5 * 5, 128)
+        self.fc2 = nn.Linear(128, 64)
+        self.fc3 = nn.Linear(64, 10)
+
+    def forward(self, x):
+        x = self.pool(F.relu(self.conv1(x)))
+        x = self.pool(F.relu(self.conv2(x)))
+        x = torch.flatten(x, 1)
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
+        x = self.fc3(x)
+        return x
+
+# 初始化网络、损失函数和优化器
+net = Net()
+criterion = nn.CrossEntropyLoss()
+optimizer = optim.SGD(net.parameters(), lr=0.01, momentum=0.9)
+
+# 训练过程
+loss_history = []
+epochs = 3
+
+for epoch in range(epochs):
+    running_loss = 0.0
+    for i, data in enumerate(trainloader, 0):
+        inputs, labels = data
+        
+        optimizer.zero_grad()
+        outputs = net(inputs)
+        loss = criterion(outputs, labels)
+        loss.backward()
+        optimizer.step()
+
+        running_loss += loss.item()
+        
+        # 每 200 个 batch 记录一次 loss
+        if i % 200 == 199:
+            avg_loss = running_loss / 200
+            print(f'[Epoch {epoch + 1}, Batch {i + 1}] loss: {avg_loss:.3f}')
+            loss_history.append(avg_loss)
+            running_loss = 0.0
+
+print('Finished Training')
+
+# 模型测试
+correct = 0
+total = 0
+with torch.no_grad():
+    for data in testloader:
+        images, labels = data
+        outputs = net(images)
+        _, predicted = torch.max(outputs.data, 1)
+        total += labels.size(0)
+        correct += (predicted == labels).sum().item()
+
+accuracy = 100 * correct / total
+print(f'Accuracy on the 10000 test images: {accuracy:.2f}%')
+
+# 绘制 Loss 变化图
+plt.plot(loss_history)
+plt.title('Training Loss')
+plt.xlabel('Steps (x200 batches)')
+plt.ylabel('Loss')
+plt.show()
+
