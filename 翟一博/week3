@@ -4,33 +4,30 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, TensorDataset
 from mnist_data import load_mnist
-# 1. 数据: numpy -> tensor -> 分批
 x, y, xt, yt = load_mnist("data")
 train_loader = DataLoader(TensorDataset(torch.from_numpy(x), torch.from_numpy(y)),
                           batch_size=128, shuffle=True)
 test_loader = DataLoader(TensorDataset(torch.from_numpy(xt), torch.from_numpy(yt)),
                          batch_size=512)
-# 2. 模型
 model = nn.Sequential(
-    nn.Conv2d(1, 32, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2),    # 28 -> 14
-    nn.Conv2d(32, 64, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2),   # 14 -> 7
+    nn.Conv2d(1, 32, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2),
+    nn.Conv2d(32, 64, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2),
     nn.Flatten(),
-    nn.Linear(64 * 7 * 7, 128), nn.ReLU(),
-    nn.Linear(128, 10),                                            # 10 个类别分数
+    nn.Linear(64 * 7 * 7, 128), nn.ReLU(), nn.Dropout(0.25),
+    nn.Linear(128, 10),
 )
 print("参数量:", sum(p.numel() for p in model.parameters()))
-# 3. 训练
-loss_fn = nn.CrossEntropyLoss()                        # 内部含 softmax，喂 logits
+loss_fn = nn.CrossEntropyLoss()
 opt = torch.optim.Adam(model.parameters(), lr=1e-3)
 t0 = time.time()
 for epoch in range(1, 4):
     model.train()
     total = 0.0
     for xb, yb in train_loader:
-        opt.zero_grad()                # 清空梯度
-        loss = loss_fn(model(xb), yb)  # 前向 + 交叉熵
-        loss.backward()                # 反向传播
-        opt.step()                     # 更新参数
+        opt.zero_grad()
+        loss = loss_fn(model(xb), yb)
+        loss.backward()
+        opt.step()
         total += loss.item()
     model.eval()
     correct = 0
